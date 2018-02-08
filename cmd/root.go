@@ -49,5 +49,5 @@ func Execute() {
 }
 
 func init() {
-	RootCmd.PersistentFlags().String(flDBPath, "stalotto_data.db", "Set path to application db")
+	RootCmd.PersistentFlags().String(flDBPath, "~/.stalotto_data.db", "Set path to application db")
 }
