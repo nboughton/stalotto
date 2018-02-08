@@ -21,26 +21,60 @@
 package cmd
 
 import (
-	"log"
+	"fmt"
+	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	"server/stalotto/db"
 )
 
-// updateCmd represents the update command
-var updateCmd = &cobra.Command{
-	Use:   "update",
-	Short: "Update or create the Sqlite DB",
-	Long:  ``,
+const (
+	flBegin   = "begin"
+	flEnd     = "end"
+	flMachine = "machine"
+	flSet     = "set"
+)
+
+var fmtDate = "2006-01-02"
+
+// recordsCmd represents the records command
+var recordsCmd = &cobra.Command{
+	Use:   "records",
+	Short: "Retrieve and print a record set",
+	Long:  `--begin and --end dates must be formatted as YYYY-MM-DD`,
 	Run: func(cmd *cobra.Command, args []string) {
 		dbPath, _ := cmd.Flags().GetString(flDBPath)
+		appDB := db.Connect(dbPath)
 
-		if err := db.Connect(dbPath).Update(); err != nil {
-			log.Println(err)
+		bStr, _ := cmd.Flags().GetString(flBegin)
+		begin, err := time.Parse(fmtDate, bStr)
+		chkDateErr(err)
+
+		eStr, _ := cmd.Flags().GetString(flEnd)
+		end, err := time.Parse(fmtDate, eStr)
+		chkDateErr(err)
+
+		machines, _ := cmd.Flags().GetStringArray(flMachine)
+		sets, _ := cmd.Flags().GetIntSlice(flSet)
+
+		for rec := range appDB.GetRecords(begin, end, machines, sets) {
+			fmt.Println(rec)
 		}
 	},
 }
 
+func chkDateErr(e error) {
+	if e != nil {
+		fmt.Printf("Invalid date (%s). Ensure format is YYYY-MM-DD\n", e)
+		os.Exit(1)
+	}
+}
+
 func init() {
-	RootCmd.AddCommand(updateCmd)
+	RootCmd.AddCommand(recordsCmd)
+	recordsCmd.Flags().String(flBegin, "2015-09-10", "Set beginning date for query")
+	recordsCmd.Flags().String(flEnd, time.Now().Format(fmtDate), "Set end date for query")
+	recordsCmd.Flags().StringArrayP(flMachine, "m", []string{}, "Constrain results by machine")
+	recordsCmd.Flags().IntSliceP(flSet, "s", []int{}, "Constrain results by Set")
 }

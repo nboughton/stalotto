@@ -44,7 +44,7 @@ func Scrape() <-chan Record {
 				}
 
 				// Create new Record
-				var rec Record
+				rec := NewRecord()
 
 				// Set Record date
 				if rec.Date, err = parseDateFromURL(resultURL); err != nil {
