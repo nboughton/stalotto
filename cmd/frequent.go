@@ -22,27 +22,16 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 	"server/stalotto/db"
 )
 
-const (
-	flBegin   = "begin"
-	flEnd     = "end"
-	flMachine = "machine"
-	flSet     = "set"
-)
-
-var fmtDate = "2006-01-02"
-
-// recordsCmd represents the records command
-var recordsCmd = &cobra.Command{
-	Use:   "records",
-	Short: "Retrieve and print a record set",
-	Long:  `--begin and --end dates must be formatted as YYYY-MM-DD`,
+// frequentCmd represents the frequent command
+var frequentCmd = &cobra.Command{
+	Use:   "frequent",
+	Short: "Most/Least frequently drawn numbers",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		dbPath, _ := RootCmd.Flags().GetString(flDBPath)
 		appDB := db.Connect(dbPath)
@@ -53,32 +42,16 @@ var recordsCmd = &cobra.Command{
 	},
 }
 
-func parseFlags(cmd *cobra.Command) (time.Time, time.Time, []string, []int) {
-	bStr, _ := cmd.Flags().GetString(flBegin)
-	begin, err := time.Parse(fmtDate, bStr)
-	chkDateErr(err)
-
-	eStr, _ := cmd.Flags().GetString(flEnd)
-	end, err := time.Parse(fmtDate, eStr)
-	chkDateErr(err)
-
-	machines, _ := cmd.Flags().GetStringArray(flMachine)
-	sets, _ := cmd.Flags().GetIntSlice(flSet)
-
-	return begin, end, machines, sets
-}
-
-func chkDateErr(e error) {
-	if e != nil {
-		fmt.Printf("Invalid date (%s). Ensure format is YYYY-MM-DD\n", e)
-		os.Exit(1)
-	}
-}
-
 func init() {
-	RootCmd.AddCommand(recordsCmd)
-	recordsCmd.PersistentFlags().String(flBegin, "2015-09-10", "Set beginning date for query")
-	recordsCmd.PersistentFlags().String(flEnd, time.Now().Format(fmtDate), "Set end date for query")
-	recordsCmd.PersistentFlags().StringArrayP(flMachine, "m", []string{}, "Constrain results by machine")
-	recordsCmd.PersistentFlags().IntSliceP(flSet, "s", []int{}, "Constrain results by Set")
+	recordsCmd.AddCommand(frequentCmd)
+
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// frequentCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// frequentCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

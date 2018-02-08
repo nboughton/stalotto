@@ -76,7 +76,7 @@ func (db *AppDB) Update() error {
 
 	for rec := range Scrape() {
 		if db.Exists(rec.Date) {
-			return fmt.Errorf("%+v exists, stopping update", rec)
+			return fmt.Errorf("update done")
 		}
 
 		if _, err := stmt.Exec(rec.Date, rec.Set, rec.Machine, rec.Ball[0], rec.Ball[1], rec.Ball[2], rec.Ball[3], rec.Ball[4], rec.Ball[5], rec.Ball[6]); err != nil {
