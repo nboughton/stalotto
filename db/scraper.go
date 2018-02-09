@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"server/stalotto/lotto"
 )
 
 var (
@@ -16,8 +17,8 @@ var (
 )
 
 // Scrape archive for data
-func Scrape() <-chan Record {
-	c := make(chan Record)
+func Scrape() <-chan lotto.Result {
+	c := make(chan lotto.Result)
 
 	go func() {
 		defer close(c)
@@ -38,13 +39,13 @@ func Scrape() <-chan Record {
 					return
 				}
 
-				rec, err := parseResultPage(resultURL)
+				res, err := parseResultPage(resultURL)
 				if err != nil {
 					log.Println(err)
 					return
 				}
 
-				c <- rec
+				c <- res
 			})
 		}
 	}()
@@ -52,36 +53,36 @@ func Scrape() <-chan Record {
 	return c
 }
 
-func parseResultPage(url string) (Record, error) {
-	// Create new Record
-	rec := NewRecord()
+func parseResultPage(url string) (lotto.Result, error) {
+	// Create new lotto.Result
+	res := lotto.NewResult()
 
 	// Load results page
 	resultPage, err := goquery.NewDocument(fmt.Sprintf("%s%s", baseURL, url))
 	if err != nil {
 		log.Println(err)
-		return rec, err
+		return res, err
 	}
 
-	// Set Record date
-	if rec.Date, err = parseDateFromURL(url); err != nil {
+	// Set lotto.Result date
+	if res.Date, err = parseDateFromURL(url); err != nil {
 		log.Println(err)
-		return rec, err
+		return res, err
 	}
 
-	// Set Record ball results
+	// Set lotto.Result ball results
 	resultPage.Find(".result").Each(func(i int, s *goquery.Selection) {
 		result, err := strconv.Atoi(s.Text())
 		if err != nil {
 			log.Println(err)
 		}
 
-		if i < len(rec.Ball) {
-			rec.Ball[i] = result
+		if i < len(res.Ball) {
+			res.Ball[i] = result
 		}
 	})
 
-	// Set Record machine and set
+	// Set lotto.Result machine and set
 	resultPage.Find("#siteContainer .main .lotto tbody tr td").Each(func(i int, s *goquery.Selection) {
 		if strings.Contains(s.Text(), "Set Used:") {
 			n, err := strconv.Atoi(parseUsed(s.Text()))
@@ -89,15 +90,15 @@ func parseResultPage(url string) (Record, error) {
 				log.Println(err)
 			}
 
-			rec.Set = n
+			res.Set = n
 		}
 
 		if strings.Contains(s.Text(), "Machine Used:") {
-			rec.Machine = parseUsed(s.Text())
+			res.Machine = parseUsed(s.Text())
 		}
 	})
 
-	return rec, nil
+	return res, nil
 }
 
 func parseUsed(str string) string {

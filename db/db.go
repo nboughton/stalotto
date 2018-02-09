@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3" // Import for sqlite db driver
 	qGen "github.com/nboughton/go-sqgenlite"
+	"server/stalotto/lotto"
 )
 
 var (
@@ -17,35 +18,9 @@ var (
 	fmtSqlite = "2006-01-02 15:04:05-07:00"
 )
 
-// Exported constants
-const (
-	MAXBALLVAL = 59
-	BALLS      = 7
-)
-
 // AppDB is a wrapper for *sql.DB so I can extend it by adding my own methods
 type AppDB struct {
 	*sql.DB
-}
-
-// Record wraps a single record from the database
-type Record struct {
-	Date    time.Time
-	Machine string
-	Set     int
-	Ball    []int
-}
-
-// NewRecord sets up a new Record struct for use
-func NewRecord() Record {
-	var rec Record
-	rec.Ball = make([]int, BALLS)
-	return rec
-}
-
-// String satisfies the Stringer interface for Records
-func (r Record) String() string {
-	return fmt.Sprintf("%s %s:%d %d", r.Date.Format("2006-01-02"), r.Machine, r.Set, r.Ball)
 }
 
 // Connect returns a DB connection wrapper
@@ -74,15 +49,15 @@ func (db *AppDB) Update() error {
 		return err
 	}
 
-	for rec := range Scrape() {
-		if db.Exists(rec.Date) {
+	for res := range Scrape() {
+		if db.Exists(res.Date) {
 			return fmt.Errorf("update done")
 		}
 
-		if _, err := stmt.Exec(rec.Date, rec.Set, rec.Machine, rec.Ball[0], rec.Ball[1], rec.Ball[2], rec.Ball[3], rec.Ball[4], rec.Ball[5], rec.Ball[6]); err != nil {
+		if _, err := stmt.Exec(res.Date, res.Set, res.Machine, res.Ball[0], res.Ball[1], res.Ball[2], res.Ball[3], res.Ball[4], res.Ball[5], res.Ball[6]); err != nil {
 			return err
 		}
-		log.Printf("Inserted: %+v \n", rec)
+		log.Printf("Inserted: %+v \n", res)
 	}
 
 	return nil
@@ -98,18 +73,18 @@ func (db *AppDB) Exists(t time.Time) bool {
 }
 
 // GetRecord retrieves a single record
-func (db *AppDB) GetRecord(t time.Time) (Record, error) {
+func (db *AppDB) GetRecord(t time.Time) (lotto.Result, error) {
 	q := qGen.NewQuery().
 		Select("results", allFields...).
 		Where("date = ?", t.Format(fmtSqlite))
 
 	stmt, err := db.Prepare(q.SQL)
 	if err != nil {
-		return Record{}, err
+		return lotto.Result{}, err
 	}
 
-	rec := NewRecord()
-	return rec, stmt.QueryRow(q.Args...).Scan(&rec.Date, &rec.Set, &rec.Machine, &rec.Ball[0], &rec.Ball[1], &rec.Ball[2], &rec.Ball[3], &rec.Ball[4], &rec.Ball[5], &rec.Ball[6])
+	res := lotto.NewResult()
+	return res, stmt.QueryRow(q.Args...).Scan(&res.Date, &res.Set, &res.Machine, &res.Ball[0], &res.Ball[1], &res.Ball[2], &res.Ball[3], &res.Ball[4], &res.Ball[5], &res.Ball[6])
 }
 
 func groupOR(field string, vals int) string {
@@ -121,8 +96,8 @@ func groupOR(field string, vals int) string {
 }
 
 // GetRecords returns a channel of records
-func (db *AppDB) GetRecords(begin, end time.Time, machines []string, sets []int) <-chan Record {
-	c := make(chan Record)
+func (db *AppDB) GetRecords(begin, end time.Time, machines []string, sets []int) <-chan lotto.Result {
+	c := make(chan lotto.Result)
 
 	go func() {
 		defer close(c)
@@ -158,13 +133,13 @@ func (db *AppDB) GetRecords(begin, end time.Time, machines []string, sets []int)
 		}
 
 		for rows.Next() {
-			rec := NewRecord()
-			if err := rows.Scan(&rec.Date, &rec.Set, &rec.Machine, &rec.Ball[0], &rec.Ball[1], &rec.Ball[2], &rec.Ball[3], &rec.Ball[4], &rec.Ball[5], &rec.Ball[6]); err != nil {
+			res := lotto.NewResult()
+			if err := rows.Scan(&res.Date, &res.Set, &res.Machine, &res.Ball[0], &res.Ball[1], &res.Ball[2], &res.Ball[3], &res.Ball[4], &res.Ball[5], &res.Ball[6]); err != nil {
 				log.Println(err)
 				continue
 			}
 
-			c <- rec
+			c <- res
 		}
 	}()
 
