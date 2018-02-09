@@ -23,7 +23,6 @@ package lotto
 import (
 	"fmt"
 	"sort"
-	//"sort"
 	"time"
 )
 
@@ -56,8 +55,8 @@ func (r Result) String() string {
 // Set represents a collection of Results
 type Set []Result
 
-// FrequencyData returns the pruned frequency sets for balls and bonus balls
-func (s Set) FrequencyData() (balls FrequencySet, bonus FrequencySet) {
+// ByDrawFrequency returns the pruned frequency sets for balls and bonus balls
+func (s Set) ByDrawFrequency() (balls FrequencySet, bonus FrequencySet) {
 	balls = make(FrequencySet, MAXBALLVAL+1)
 	bonus = make(FrequencySet, MAXBALLVAL+1)
 
@@ -86,6 +85,7 @@ type drawn struct {
 // by draw frequency. FrequencySet also satisfies the Sort interface
 type FrequencySet []drawn
 
+// Len, Swap and Less satisfy the Sort interface for FrequencySet
 func (f FrequencySet) Len() int           { return len(f) }
 func (f FrequencySet) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
 func (f FrequencySet) Less(i, j int) bool { return f[i].frequency < f[j].frequency }
