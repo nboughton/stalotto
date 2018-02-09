@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -25,6 +27,12 @@ type AppDB struct {
 
 // Connect returns a DB connection wrapper
 func Connect(path string) *AppDB {
+	// I don't care where you want your database. I'm going to ensure that it's there
+	dir, _ := filepath.Split(path)
+	if err := os.MkdirAll(dir, 0770); err != nil {
+		log.Fatal(err)
+	}
+
 	// Connect to the database
 	db, err := sql.Open("sqlite3", path)
 	if err != nil {

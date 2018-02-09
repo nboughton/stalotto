@@ -44,16 +44,16 @@ var recordsCmd = &cobra.Command{
 	Short: "Retrieve and print a record set",
 	Long:  `--begin and --end dates must be formatted as YYYY-MM-DD`,
 	Run: func(cmd *cobra.Command, args []string) {
-		dbPath, _ := RootCmd.Flags().GetString(flDBPath)
+		dbPath, _ := cmd.Flags().GetString(flDBPath)
 		appDB := db.Connect(dbPath)
 
-		for rec := range appDB.GetRecords(parseFlags(cmd)) {
+		for rec := range appDB.GetRecords(parseRecordsQueryFlags(cmd)) {
 			fmt.Println(rec)
 		}
 	},
 }
 
-func parseFlags(cmd *cobra.Command) (time.Time, time.Time, []string, []int) {
+func parseRecordsQueryFlags(cmd *cobra.Command) (time.Time, time.Time, []string, []int) {
 	bStr, _ := cmd.Flags().GetString(flBegin)
 	begin, err := time.Parse(fmtDate, bStr)
 	chkDateErr(err)

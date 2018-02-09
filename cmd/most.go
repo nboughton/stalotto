@@ -22,32 +22,30 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
+	"server/stalotto/db"
+	"server/stalotto/lotto"
 )
 
-// Flag const names
-const (
-	flDBPath = "db"
-)
-
-// RootCmd represents the base command when called without any subcommands
-var RootCmd = &cobra.Command{
-	Use:   "stalotto",
-	Short: "Pull lotto results from web and present data derived from them",
+// mostCmd represents the most command
+var mostCmd = &cobra.Command{
+	Use:   "most",
+	Short: "Get the most frequently drawn numbers from the constrained record set",
 	Long:  ``,
-}
+	Run: func(cmd *cobra.Command, args []string) {
+		dbPath, _ := cmd.Flags().GetString(flDBPath)
+		appDB := db.Connect(dbPath)
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	if err := RootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+		set := lotto.Set{}
+		for res := range appDB.GetRecords(parseRecordsQueryFlags(cmd)) {
+			set = append(set, res)
+		}
+
+		fmt.Println(set.MostDrawn())
+	},
 }
 
 func init() {
-	RootCmd.PersistentFlags().String(flDBPath, fmt.Sprintf("%s/.cache/stalotto/data.db", os.Getenv("HOME")), "Set path to application db")
+	recordsCmd.AddCommand(mostCmd)
 }

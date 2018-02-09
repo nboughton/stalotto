@@ -25,23 +25,27 @@ import (
 
 	"github.com/spf13/cobra"
 	"server/stalotto/db"
+	"server/stalotto/lotto"
 )
 
-// frequentCmd represents the frequent command
-var frequentCmd = &cobra.Command{
-	Use:   "frequent",
-	Short: "Most/Least frequently drawn numbers",
+// leastCmd represents the least command
+var leastCmd = &cobra.Command{
+	Use:   "least",
+	Short: "Get the least frequently drawn numbers from the constrained record set",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		dbPath, _ := RootCmd.Flags().GetString(flDBPath)
+		dbPath, _ := cmd.Flags().GetString(flDBPath)
 		appDB := db.Connect(dbPath)
 
-		for rec := range appDB.GetRecords(parseFlags(cmd)) {
-			fmt.Println(rec)
+		set := lotto.Set{}
+		for res := range appDB.GetRecords(parseRecordsQueryFlags(cmd)) {
+			set = append(set, res)
 		}
+
+		fmt.Println(set.LeastDrawn())
 	},
 }
 
 func init() {
-	recordsCmd.AddCommand(frequentCmd)
+	recordsCmd.AddCommand(leastCmd)
 }
