@@ -22,6 +22,7 @@ package lotto
 
 import (
 	"fmt"
+	"math/rand"
 	"sort"
 	"time"
 )
@@ -124,4 +125,23 @@ func (f FrequencySet) Desc() []int {
 	sort.Sort(sort.Reverse(s))
 
 	return s.Balls()
+}
+
+// Draw returns n numbers at random from set
+func Draw(set []int, n int) []int {
+	// Set a rand seed
+	rand.Seed(time.Now().UnixNano())
+
+	out := []int{}
+	for i := 0; i < n; i++ {
+		// Select index for this draw
+		idx := rand.Intn(len(set))
+		// Append pick to the output
+		out = append(out, set[idx])
+		// Remove item from set for next draw
+		set = append(set[:idx], set[idx+1:]...)
+	}
+	sort.Ints(out)
+
+	return out
 }
