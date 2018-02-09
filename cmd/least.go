@@ -42,7 +42,8 @@ var leastCmd = &cobra.Command{
 			set = append(set, res)
 		}
 
-		fmt.Println(set.LeastDrawn())
+		balls, bonus := set.FrequencyData()
+		fmt.Println(balls.Asc()[:6], bonus.Asc()[0])
 	},
 }
 

@@ -42,7 +42,8 @@ var mostCmd = &cobra.Command{
 			set = append(set, res)
 		}
 
-		fmt.Println(set.MostDrawn())
+		balls, bonus := set.FrequencyData()
+		fmt.Println(balls.Desc()[:6], bonus.Desc()[0])
 	},
 }
 

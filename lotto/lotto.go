@@ -56,64 +56,10 @@ func (r Result) String() string {
 // Set represents a collection of Results
 type Set []Result
 
-type drawn struct {
-	ball      int
-	frequency int
-}
-
-type byFrequency []drawn
-
-func (f byFrequency) Len() int           { return len(f) }
-func (f byFrequency) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
-func (f byFrequency) Less(i, j int) bool { return f[i].frequency < f[j].frequency }
-
-// Prune off balls that have never been drawn
-func (f byFrequency) Prune() byFrequency {
-	out := byFrequency{}
-	for _, b := range f {
-		if b.frequency > 0 {
-			out = append(out, b)
-		}
-	}
-	return out
-}
-
-// MostDrawn returns the 6 most drawn balls and the most drawn Bonus number
-// from the Set
-func (s Set) MostDrawn() ([]int, int) {
-	balls, bonus := s.frequencyData()
-
-	sort.Sort(sort.Reverse(balls))
-	sort.Sort(sort.Reverse(bonus))
-
-	results := []int{}
-	for i := 0; i < BALLS-1; i++ {
-		results = append(results, balls[i].ball)
-	}
-
-	return results, bonus[0].ball
-}
-
-// LeastDrawn returns the 6 lesat drawn balls and the least drawn Bonus number
-// from the Set
-func (s Set) LeastDrawn() ([]int, int) {
-	balls, bonus := s.frequencyData()
-
-	sort.Sort(balls)
-	sort.Sort(bonus)
-
-	results := []int{}
-	for i := 0; i < BALLS-1; i++ {
-		results = append(results, balls[i].ball)
-	}
-
-	return results, bonus[0].ball
-}
-
-// frequencyData returns the pruned frequency sets for balls and bonus balls
-func (s Set) frequencyData() (balls byFrequency, bonus byFrequency) {
-	balls = make(byFrequency, MAXBALLVAL+1)
-	bonus = make(byFrequency, MAXBALLVAL+1)
+// FrequencyData returns the pruned frequency sets for balls and bonus balls
+func (s Set) FrequencyData() (balls FrequencySet, bonus FrequencySet) {
+	balls = make(FrequencySet, MAXBALLVAL+1)
+	bonus = make(FrequencySet, MAXBALLVAL+1)
 
 	for _, res := range s {
 		for i, n := range res.Ball {
@@ -129,4 +75,53 @@ func (s Set) frequencyData() (balls byFrequency, bonus byFrequency) {
 	}
 
 	return balls.Prune(), bonus.Prune()
+}
+
+type drawn struct {
+	ball      int
+	frequency int
+}
+
+// FrequencySet represents a collection of balls that can be ordered
+// by draw frequency. FrequencySet also satisfies the Sort interface
+type FrequencySet []drawn
+
+func (f FrequencySet) Len() int           { return len(f) }
+func (f FrequencySet) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
+func (f FrequencySet) Less(i, j int) bool { return f[i].frequency < f[j].frequency }
+
+// Prune off balls that have never been drawn
+func (f FrequencySet) Prune() FrequencySet {
+	out := FrequencySet{}
+	for _, b := range f {
+		if b.frequency > 0 {
+			out = append(out, b)
+		}
+	}
+	return out
+}
+
+// Balls returns numbers in whatever order the set is currently in
+func (f FrequencySet) Balls() []int {
+	b := []int{}
+	for _, n := range f {
+		b = append(b, n.ball)
+	}
+	return b
+}
+
+// Asc orders balls by least to most frequently drawn
+func (f FrequencySet) Asc() []int {
+	s := f.Prune()
+	sort.Sort(s)
+
+	return s.Balls()
+}
+
+// Desc orders balls by most to least frequently drawn
+func (f FrequencySet) Desc() []int {
+	s := f.Prune()
+	sort.Sort(sort.Reverse(s))
+
+	return s.Balls()
 }
