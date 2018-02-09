@@ -23,6 +23,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"text/tabwriter"
 
 	"github.com/spf13/cobra"
 )
@@ -31,6 +32,9 @@ import (
 const (
 	flDBPath = "db"
 )
+
+// tabwriter for any text that needs formatting
+var tw = tabwriter.NewWriter(os.Stdout, 1, 2, 1, ' ', 0)
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{

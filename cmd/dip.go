@@ -22,16 +22,12 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"text/tabwriter"
 	"time"
 
 	"github.com/spf13/cobra"
 	"server/stalotto/db"
 	"server/stalotto/lotto"
 )
-
-var tw = tabwriter.NewWriter(os.Stdout, 1, 2, 1, ' ', 0)
 
 // dipCmd represents the dip command
 var dipCmd = &cobra.Command{
