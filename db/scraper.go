@@ -77,8 +77,10 @@ func parseResultPage(url string) (lotto.Result, error) {
 			log.Println(err)
 		}
 
-		if i < len(res.Ball) {
-			res.Ball[i] = result
+		if i < len(res.Balls) {
+			res.Balls[i] = result
+		} else {
+			res.Bonus = result
 		}
 	})
 

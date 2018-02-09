@@ -30,7 +30,7 @@ import (
 // Exported constants
 const (
 	MAXBALLVAL = 59
-	BALLS      = 7
+	BALLS      = 6
 )
 
 // Result represents a single Lotto draw result
@@ -38,19 +38,20 @@ type Result struct {
 	Date    time.Time
 	Machine string
 	Set     int
-	Ball    []int
+	Balls   []int
+	Bonus   int
 }
 
 // NewResult sets up a new Result struct for use
 func NewResult() Result {
 	var res Result
-	res.Ball = make([]int, BALLS)
+	res.Balls = make([]int, BALLS)
 	return res
 }
 
 // String satisfies the Stringer interface for Result
 func (r Result) String() string {
-	return fmt.Sprintf("%s %s:%d %d", r.Date.Format("2006-01-02"), r.Machine, r.Set, r.Ball)
+	return fmt.Sprintf("%s %s:%d %d %d", r.Date.Format("2006-01-02"), r.Machine, r.Set, r.Balls, r.Bonus)
 }
 
 // Set represents a collection of Results
@@ -62,16 +63,12 @@ func (s Set) ByDrawFrequency() (balls FrequencySet, bonus FrequencySet) {
 	bonus = make(FrequencySet, MAXBALLVAL+1)
 
 	for _, res := range s {
-		for i, n := range res.Ball {
-			if i == BALLS-1 {
-				bonus[n].ball = n
-				bonus[n].frequency++
-				break // The bonus ball is always last
-			}
-
+		for _, n := range res.Balls {
 			balls[n].ball = n
 			balls[n].frequency++
 		}
+		bonus[res.Bonus].ball = res.Bonus
+		bonus[res.Bonus].frequency++
 	}
 
 	return balls.Prune(), bonus.Prune()

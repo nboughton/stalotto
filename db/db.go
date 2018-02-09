@@ -62,7 +62,7 @@ func (db *AppDB) Update() error {
 			return fmt.Errorf("update done")
 		}
 
-		if _, err := stmt.Exec(res.Date, res.Set, res.Machine, res.Ball[0], res.Ball[1], res.Ball[2], res.Ball[3], res.Ball[4], res.Ball[5], res.Ball[6]); err != nil {
+		if _, err := stmt.Exec(res.Date, res.Set, res.Machine, res.Balls[0], res.Balls[1], res.Balls[2], res.Balls[3], res.Balls[4], res.Balls[5], res.Bonus); err != nil {
 			return err
 		}
 		log.Printf("Inserted: %+v \n", res)
@@ -92,7 +92,7 @@ func (db *AppDB) GetRecord(t time.Time) (lotto.Result, error) {
 	}
 
 	res := lotto.NewResult()
-	return res, stmt.QueryRow(q.Args...).Scan(&res.Date, &res.Set, &res.Machine, &res.Ball[0], &res.Ball[1], &res.Ball[2], &res.Ball[3], &res.Ball[4], &res.Ball[5], &res.Ball[6])
+	return res, stmt.QueryRow(q.Args...).Scan(&res.Date, &res.Set, &res.Machine, &res.Balls[0], &res.Balls[1], &res.Balls[2], &res.Balls[3], &res.Balls[4], &res.Balls[5], &res.Bonus)
 }
 
 func groupOR(field string, vals int) string {
@@ -142,7 +142,7 @@ func (db *AppDB) GetRecords(begin, end time.Time, machines []string, sets []int)
 
 		for rows.Next() {
 			res := lotto.NewResult()
-			if err := rows.Scan(&res.Date, &res.Set, &res.Machine, &res.Ball[0], &res.Ball[1], &res.Ball[2], &res.Ball[3], &res.Ball[4], &res.Ball[5], &res.Ball[6]); err != nil {
+			if err := rows.Scan(&res.Date, &res.Set, &res.Machine, &res.Balls[0], &res.Balls[1], &res.Balls[2], &res.Balls[3], &res.Balls[4], &res.Balls[5], &res.Bonus); err != nil {
 				log.Println(err)
 				continue
 			}

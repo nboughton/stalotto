@@ -30,7 +30,7 @@ import (
 // updateCmd represents the update command
 var updateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "Update or create the Sqlite DB",
+	Short: "Update or create the DB",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		dbPath, _ := cmd.Flags().GetString(flDBPath)
