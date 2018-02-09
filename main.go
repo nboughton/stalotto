@@ -20,7 +20,7 @@
 
 package main
 
-import "server/stalotto/cmd"
+import "github.com/nboughton/stalotto/cmd"
 
 func main() {
 	cmd.Execute()

@@ -26,7 +26,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"server/stalotto/db"
+	"github.com/nboughton/stalotto/db"
 )
 
 const (

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"server/stalotto/lotto"
+	"github.com/nboughton/stalotto/lotto"
 )
 
 var (

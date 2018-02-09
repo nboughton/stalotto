@@ -24,7 +24,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"server/stalotto/db"
+	"github.com/nboughton/stalotto/db"
 )
 
 // updateCmd represents the update command

@@ -11,7 +11,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3" // Import for sqlite db driver
 	qGen "github.com/nboughton/go-sqgenlite"
-	"server/stalotto/lotto"
+	"github.com/nboughton/stalotto/lotto"
 )
 
 var (

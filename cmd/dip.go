@@ -25,8 +25,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"server/stalotto/db"
-	"server/stalotto/lotto"
+	"github.com/nboughton/stalotto/db"
+	"github.com/nboughton/stalotto/lotto"
 )
 
 // dipCmd represents the dip command
