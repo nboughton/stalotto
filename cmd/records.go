@@ -22,11 +22,11 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/nboughton/stalotto/lotto"
 	"os"
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/nboughton/stalotto/db"
 )
 
 const (
@@ -44,13 +44,19 @@ var recordsCmd = &cobra.Command{
 	Short: "Retrieve and print a record set",
 	Long:  `--begin and --end dates must be formatted as YYYY-MM-DD`,
 	Run: func(cmd *cobra.Command, args []string) {
-		dbPath, _ := cmd.Flags().GetString(flDBPath)
-		appDB := db.Connect(dbPath)
-
-		for rec := range appDB.GetRecords(parseRecordsQueryFlags(cmd)) {
+		for _, rec := range resultsQuery(cmd) {
 			fmt.Println(rec)
 		}
 	},
+}
+
+func resultsQuery(cmd *cobra.Command) lotto.Set {
+	set := lotto.Set{}
+	for res := range appDB.GetRecords(parseRecordsQueryFlags(cmd)) {
+		set = append(set, res)
+	}
+
+	return set
 }
 
 func parseRecordsQueryFlags(cmd *cobra.Command) (time.Time, time.Time, []string, []int) {

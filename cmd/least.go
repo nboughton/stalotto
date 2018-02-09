@@ -24,8 +24,6 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/nboughton/stalotto/db"
-	"github.com/nboughton/stalotto/lotto"
 )
 
 // leastCmd represents the least command
@@ -34,15 +32,7 @@ var leastCmd = &cobra.Command{
 	Short: "Get the least frequently drawn numbers from the constrained record set",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		dbPath, _ := cmd.Flags().GetString(flDBPath)
-		appDB := db.Connect(dbPath)
-
-		set := lotto.Set{}
-		for res := range appDB.GetRecords(parseRecordsQueryFlags(cmd)) {
-			set = append(set, res)
-		}
-
-		balls, bonus := set.ByDrawFrequency()
+		balls, bonus := resultsQuery(cmd).ByDrawFrequency()
 		fmt.Println(balls.Asc()[:6], bonus.Asc()[0])
 	},
 }

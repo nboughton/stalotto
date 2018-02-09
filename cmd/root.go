@@ -25,6 +25,7 @@ import (
 	"os"
 	"text/tabwriter"
 
+	"github.com/nboughton/stalotto/db"
 	"github.com/spf13/cobra"
 )
 
@@ -33,14 +34,21 @@ const (
 	flDBPath = "db"
 )
 
-// tabwriter for any text that needs formatting
-var tw = tabwriter.NewWriter(os.Stdout, 1, 2, 1, ' ', 0)
+var (
+	// tabwriter for any text that needs formatting
+	tw    = tabwriter.NewWriter(os.Stdout, 1, 2, 1, ' ', 0)
+	appDB *db.AppDB
+)
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "stalotto",
 	Short: "Pull lotto results from web and present data derived from them",
 	Long:  ``,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		dbPath, _ := cmd.Flags().GetString(flDBPath)
+		appDB = db.Connect(dbPath)
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

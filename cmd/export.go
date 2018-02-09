@@ -24,8 +24,6 @@ import (
 	"log"
 
 	"github.com/nboughton/go-utils/json/file"
-	"github.com/nboughton/stalotto/db"
-	"github.com/nboughton/stalotto/lotto"
 	"github.com/spf13/cobra"
 )
 
@@ -40,17 +38,8 @@ var exportCmd = &cobra.Command{
 	Short: "Export a record set as a json file",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		dbPath, _ := cmd.Flags().GetString(flDBPath)
 		outputFile, _ := cmd.Flags().GetString(flExportFile)
-
-		appDB := db.Connect(dbPath)
-
-		set := lotto.Set{}
-		for res := range appDB.GetRecords(parseRecordsQueryFlags(cmd)) {
-			set = append(set, res)
-		}
-
-		if err := file.Write(outputFile, set); err != nil {
+		if err := file.Write(outputFile, resultsQuery(cmd)); err != nil {
 			log.Println(err)
 		}
 	},

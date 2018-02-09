@@ -24,7 +24,6 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"github.com/nboughton/stalotto/db"
 )
 
 // updateCmd represents the update command
@@ -33,9 +32,7 @@ var updateCmd = &cobra.Command{
 	Short: "Update or create the DB",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		dbPath, _ := cmd.Flags().GetString(flDBPath)
-
-		if err := db.Connect(dbPath).Update(); err != nil {
+		if err := appDB.Update(); err != nil {
 			log.Println(err)
 		}
 	},

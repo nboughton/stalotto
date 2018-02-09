@@ -24,9 +24,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/spf13/cobra"
-	"github.com/nboughton/stalotto/db"
 	"github.com/nboughton/stalotto/lotto"
+	"github.com/spf13/cobra"
 )
 
 // dipCmd represents the dip command
@@ -37,9 +36,6 @@ var dipCmd = &cobra.Command{
 of balls was increased to 59) and removes the least drawn half before randomly drawing
 a set.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		dbPath, _ := cmd.Flags().GetString(flDBPath)
-		appDB := db.Connect(dbPath)
-
 		begin := time.Date(2015, time.September, 9, 0, 0, 0, 0, time.Local)
 		end := time.Now()
 
