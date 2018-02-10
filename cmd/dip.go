@@ -39,8 +39,8 @@ a set.`,
 		begin := time.Date(2015, time.September, 9, 0, 0, 0, 0, time.Local)
 		end := time.Now()
 
-		set := lotto.Set{}
-		for res := range appDB.GetRecords(begin, end, []string{}, []int{}) {
+		set := lotto.ResultSet{}
+		for res := range appDB.GetResults(begin, end, []string{}, []int{}) {
 			set = append(set, res)
 		}
 

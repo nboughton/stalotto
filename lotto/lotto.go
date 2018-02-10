@@ -54,11 +54,11 @@ func (r Result) String() string {
 	return fmt.Sprintf("%s %s:%d %d %d", r.Date.Format("2006-01-02"), r.Machine, r.Set, r.Balls, r.Bonus)
 }
 
-// Set represents a collection of Results
-type Set []Result
+// ResultSet represents a collection of Results
+type ResultSet []Result
 
 // ByDrawFrequency returns the pruned frequency sets for balls and bonus balls
-func (s Set) ByDrawFrequency() (balls FrequencySet, bonus FrequencySet) {
+func (s ResultSet) ByDrawFrequency() (balls FrequencySet, bonus FrequencySet) {
 	balls = make(FrequencySet, MAXBALLVAL+1)
 	bonus = make(FrequencySet, MAXBALLVAL+1)
 
@@ -126,7 +126,7 @@ func (f FrequencySet) Desc() []int {
 
 // Draw returns n numbers at random from set
 func Draw(set []int, n int) []int {
-	// Set a rand seed
+	// ResultSet a rand seed
 	rand.Seed(time.Now().UnixNano())
 
 	out := []int{}

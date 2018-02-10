@@ -46,6 +46,6 @@ var exportCmd = &cobra.Command{
 }
 
 func init() {
-	recordsCmd.AddCommand(exportCmd)
+	resultsCmd.AddCommand(exportCmd)
 	exportCmd.Flags().String(flExportFile, "stalotto-export.json", "Set output file path/name")
 }

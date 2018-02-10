@@ -38,5 +38,5 @@ var leastCmd = &cobra.Command{
 }
 
 func init() {
-	recordsCmd.AddCommand(leastCmd)
+	resultsCmd.AddCommand(leastCmd)
 }

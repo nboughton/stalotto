@@ -73,15 +73,15 @@ func (db *AppDB) Update() error {
 
 // Exists returns true if a record with t timestamp exists
 func (db *AppDB) Exists(t time.Time) bool {
-	if _, err := db.GetRecord(t); err != nil {
+	if _, err := db.GetResult(t); err != nil {
 		return false
 	}
 
 	return true
 }
 
-// GetRecord retrieves a single record
-func (db *AppDB) GetRecord(t time.Time) (lotto.Result, error) {
+// GetResult retrieves a single record
+func (db *AppDB) GetResult(t time.Time) (lotto.Result, error) {
 	q := qGen.NewQuery().
 		Select("results", allFields...).
 		Where("date = ?", t.Format(fmtSqlite))
@@ -103,8 +103,8 @@ func groupOR(field string, vals int) string {
 	return "(" + strings.Join(slc, " OR ") + ")"
 }
 
-// GetRecords returns a channel of records
-func (db *AppDB) GetRecords(begin, end time.Time, machines []string, sets []int) <-chan lotto.Result {
+// GetResults returns a channel of records
+func (db *AppDB) GetResults(begin, end time.Time, machines []string, sets []int) <-chan lotto.Result {
 	c := make(chan lotto.Result)
 
 	go func() {

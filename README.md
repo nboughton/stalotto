@@ -18,7 +18,7 @@ Run a db update after installation to pull all the historical data from the lott
     Available Commands:
         dip         Draw some random balls
         help        Help about any command
-        records     Retrieve and print a record set
+        results     Retrieve/Print/Export a result set
         update      Update or create the DB
     
     Flags:

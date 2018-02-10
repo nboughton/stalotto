@@ -38,10 +38,10 @@ const (
 
 var fmtDate = "2006-01-02"
 
-// recordsCmd represents the records command
-var recordsCmd = &cobra.Command{
-	Use:   "records",
-	Short: "Retrieve and print a record set",
+// resultsCmd represents the results command
+var resultsCmd = &cobra.Command{
+	Use:   "results",
+	Short: "Retrieve/Print/Export a result set",
 	Long:  `--begin and --end dates must be formatted as YYYY-MM-DD`,
 	Run: func(cmd *cobra.Command, args []string) {
 		for _, rec := range resultsQuery(cmd) {
@@ -50,16 +50,16 @@ var recordsCmd = &cobra.Command{
 	},
 }
 
-func resultsQuery(cmd *cobra.Command) lotto.Set {
-	set := lotto.Set{}
-	for res := range appDB.GetRecords(parseRecordsQueryFlags(cmd)) {
+func resultsQuery(cmd *cobra.Command) lotto.ResultSet {
+	set := lotto.ResultSet{}
+	for res := range appDB.GetResults(parseQueryFlags(cmd)) {
 		set = append(set, res)
 	}
 
 	return set
 }
 
-func parseRecordsQueryFlags(cmd *cobra.Command) (time.Time, time.Time, []string, []int) {
+func parseQueryFlags(cmd *cobra.Command) (time.Time, time.Time, []string, []int) {
 	bStr, _ := cmd.Flags().GetString(flBegin)
 	begin, err := time.Parse(fmtDate, bStr)
 	chkDateErr(err)
@@ -82,9 +82,9 @@ func chkDateErr(e error) {
 }
 
 func init() {
-	RootCmd.AddCommand(recordsCmd)
-	recordsCmd.PersistentFlags().String(flBegin, "2015-09-10", "Set beginning date for query")
-	recordsCmd.PersistentFlags().String(flEnd, time.Now().Format(fmtDate), "Set end date for query")
-	recordsCmd.PersistentFlags().StringArrayP(flMachine, "m", []string{}, "Constrain results by machine")
-	recordsCmd.PersistentFlags().IntSliceP(flSet, "s", []int{}, "Constrain results by Set")
+	RootCmd.AddCommand(resultsCmd)
+	resultsCmd.PersistentFlags().String(flBegin, "2015-09-10", "Set beginning date for query")
+	resultsCmd.PersistentFlags().String(flEnd, time.Now().Format(fmtDate), "Set end date for query")
+	resultsCmd.PersistentFlags().StringArrayP(flMachine, "m", []string{}, "Constrain results by machine")
+	resultsCmd.PersistentFlags().IntSliceP(flSet, "s", []int{}, "Constrain results by Set")
 }
