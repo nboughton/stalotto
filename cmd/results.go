@@ -22,10 +22,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/nboughton/stalotto/lotto"
 	"os"
 	"time"
 
+	"github.com/nboughton/stalotto/lotto"
 	"github.com/spf13/cobra"
 )
 
