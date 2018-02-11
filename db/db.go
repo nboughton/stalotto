@@ -165,12 +165,12 @@ func (db *AppDB) Results(begin, end time.Time, machines []string, sets []int) <-
 }
 
 // Machines returns the distinct machine names constrained by date and sets
-func (db *AppDB) Machines(begin time.Time, end time.Time, machines []string) ([]string, error) {
+func (db *AppDB) Machines(begin time.Time, end time.Time, sets []int) ([]string, error) {
 	q := qGen.NewQuery().Select("results", "DISTINCT(bmac)")
-	if len(machines) > 0 {
-		q.Append(fmt.Sprintf("AND %s", groupOR("bmac", len(machines))))
-		for _, m := range machines {
-			q.Args = append(q.Args, m)
+	if len(sets) > 0 {
+		q.Append(fmt.Sprintf("AND %s", groupOR("bset", len(sets))))
+		for _, s := range sets {
+			q.Args = append(q.Args, s)
 		}
 	}
 	q.Order("bmac")
@@ -196,12 +196,12 @@ func (db *AppDB) Machines(begin time.Time, end time.Time, machines []string) ([]
 }
 
 // Sets returns the distinct sets constrained by date and machines
-func (db *AppDB) Sets(begin time.Time, end time.Time, sets []int) ([]int, error) {
+func (db *AppDB) Sets(begin time.Time, end time.Time, machines []string) ([]int, error) {
 	q := qGen.NewQuery().Select("results", "DISTINCT(bset)")
-	if len(sets) > 0 {
-		q.Append(fmt.Sprintf("AND %s", groupOR("bset", len(sets))))
-		for _, s := range sets {
-			q.Args = append(q.Args, s)
+	if len(machines) > 0 {
+		q.Append(fmt.Sprintf("AND %s", groupOR("bmac", len(machines))))
+		for _, m := range machines {
+			q.Args = append(q.Args, m)
 		}
 	}
 	q.Order("bset")
