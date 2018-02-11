@@ -34,9 +34,9 @@ var mostCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		balls, bonus := resultsQuery(cmd).ByDrawFrequency()
-		sorted := balls.Desc()[:6]
+		sorted := balls.Prune().Desc().Balls()[:6]
 		sort.Ints(sorted)
-		fmt.Println(sorted, bonus.Desc()[0])
+		fmt.Println(sorted, bonus.Prune().Desc().Balls()[0])
 	},
 }
 

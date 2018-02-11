@@ -34,9 +34,9 @@ var leastCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		balls, bonus := resultsQuery(cmd).ByDrawFrequency()
-		sorted := balls.Asc()[:6]
+		sorted := balls.Prune().Asc().Balls()[:6]
 		sort.Ints(sorted)
-		fmt.Println(sorted, bonus.Asc()[0])
+		fmt.Println(sorted, bonus.Prune().Asc().Balls()[0])
 	},
 }
 

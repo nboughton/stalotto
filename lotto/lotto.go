@@ -64,19 +64,20 @@ func (s ResultSet) ByDrawFrequency() (balls FrequencySet, bonus FrequencySet) {
 
 	for _, res := range s {
 		for _, n := range res.Balls {
-			balls[n].ball = n
-			balls[n].frequency++
+			balls[n].Ball = n
+			balls[n].Frequency++
 		}
-		bonus[res.Bonus].ball = res.Bonus
-		bonus[res.Bonus].frequency++
+		bonus[res.Bonus].Ball = res.Bonus
+		bonus[res.Bonus].Frequency++
 	}
 
-	return balls.Prune(), bonus.Prune()
+	return balls, bonus
 }
 
+// Drawn represents a record of a ball number and how often it has been drawn
 type drawn struct {
-	ball      int
-	frequency int
+	Ball      int
+	Frequency int
 }
 
 // FrequencySet represents a collection of balls that can be ordered
@@ -86,13 +87,13 @@ type FrequencySet []drawn
 // Len, Swap and Less satisfy the Sort interface for FrequencySet
 func (f FrequencySet) Len() int           { return len(f) }
 func (f FrequencySet) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
-func (f FrequencySet) Less(i, j int) bool { return f[i].frequency < f[j].frequency }
+func (f FrequencySet) Less(i, j int) bool { return f[i].Frequency < f[j].Frequency }
 
 // Prune off balls that have never been drawn
 func (f FrequencySet) Prune() FrequencySet {
 	out := FrequencySet{}
 	for _, b := range f {
-		if b.frequency > 0 {
+		if b.Frequency > 0 {
 			out = append(out, b)
 		}
 	}
@@ -103,25 +104,23 @@ func (f FrequencySet) Prune() FrequencySet {
 func (f FrequencySet) Balls() []int {
 	b := []int{}
 	for _, n := range f {
-		b = append(b, n.ball)
+		b = append(b, n.Ball)
 	}
 	return b
 }
 
 // Asc orders balls by least to most frequently drawn
-func (f FrequencySet) Asc() []int {
-	s := f.Prune()
-	sort.Sort(s)
+func (f FrequencySet) Asc() FrequencySet {
+	sort.Sort(f)
 
-	return s.Balls()
+	return f
 }
 
 // Desc orders balls by most to least frequently drawn
-func (f FrequencySet) Desc() []int {
-	s := f.Prune()
-	sort.Sort(sort.Reverse(s))
+func (f FrequencySet) Desc() FrequencySet {
+	sort.Sort(sort.Reverse(f))
 
-	return s.Balls()
+	return f
 }
 
 // Draw returns n numbers at random from set
