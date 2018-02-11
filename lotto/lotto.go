@@ -57,7 +57,7 @@ func (r Result) String() string {
 // ResultSet represents a collection of Results
 type ResultSet []Result
 
-// ByDrawFrequency returns the pruned frequency sets for balls and bonus balls
+// ByDrawFrequency returns the frequency sets for balls and bonus balls
 func (s ResultSet) ByDrawFrequency() (balls FrequencySet, bonus FrequencySet) {
 	balls = make(FrequencySet, MAXBALLVAL+1)
 	bonus = make(FrequencySet, MAXBALLVAL+1)
