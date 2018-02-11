@@ -45,7 +45,8 @@ a set.`,
 		}
 
 		balls, bonus := set.ByDrawFrequency()
-		numbers := balls.Prune().Desc().Balls()[:len(balls.Prune().Desc().Balls())/2]
+		nSet := balls.Prune().Desc().Balls()
+		numbers := nSet[:len(nSet)/2]
 		bonuses := bonus.Prune().Desc().Balls()[:10]
 
 		fmt.Fprintf(tw, "Balls:\t%v\nBonus:\t%v\n", lotto.Draw(numbers, 6), lotto.Draw(bonuses, 1))

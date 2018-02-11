@@ -71,7 +71,7 @@ func (s ResultSet) ByDrawFrequency() (balls FrequencySet, bonus FrequencySet) {
 		bonus[res.Bonus].Frequency++
 	}
 
-	return balls, bonus
+	return balls[1:], bonus[1:]
 }
 
 // Drawn represents a record of a ball number and how often it has been drawn
