@@ -54,7 +54,7 @@ var resultsCmd = &cobra.Command{
 
 func resultsQuery(cmd *cobra.Command) lotto.ResultSet {
 	set := lotto.ResultSet{}
-	for res := range appDB.GetResults(parseQueryFlags(cmd)) {
+	for res := range appDB.Results(parseQueryFlags(cmd)) {
 		set = append(set, res)
 	}
 

@@ -40,7 +40,7 @@ a set.`,
 		end := time.Now()
 
 		set := lotto.ResultSet{}
-		for res := range appDB.GetResults(begin, end, []string{}, []int{}) {
+		for res := range appDB.Results(begin, end, []string{}, []int{}) {
 			set = append(set, res)
 		}
 
