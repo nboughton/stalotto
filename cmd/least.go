@@ -22,6 +22,7 @@ package cmd
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/spf13/cobra"
 )
@@ -33,7 +34,9 @@ var leastCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		balls, bonus := resultsQuery(cmd).ByDrawFrequency()
-		fmt.Println(balls.Asc()[:6], bonus.Asc()[0])
+		sorted := balls.Asc()[:6]
+		sort.Ints(sorted)
+		fmt.Println(sorted, bonus.Asc()[0])
 	},
 }
 

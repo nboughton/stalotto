@@ -44,9 +44,11 @@ var resultsCmd = &cobra.Command{
 	Short: "Retrieve/Print/Export a result set",
 	Long:  `--begin and --end dates must be formatted as YYYY-MM-DD`,
 	Run: func(cmd *cobra.Command, args []string) {
-		for _, rec := range resultsQuery(cmd) {
-			fmt.Println(rec)
+		fmt.Fprintln(tw, "DATE\tSET\tMACHINE\tB1\tB2\tB3\tB4\tB5\tB6\tBONUS")
+		for _, r := range resultsQuery(cmd) {
+			fmt.Fprintf(tw, "%s\t%d\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", r.Date.Format("06/01/02"), r.Set, r.Machine, r.Balls[0], r.Balls[1], r.Balls[2], r.Balls[3], r.Balls[4], r.Balls[5], r.Bonus)
 		}
+		tw.Flush()
 	},
 }
 
@@ -83,7 +85,7 @@ func chkDateErr(e error) {
 
 func init() {
 	RootCmd.AddCommand(resultsCmd)
-	resultsCmd.PersistentFlags().String(flBegin, "2015-09-10", "Set beginning date for query")
+	resultsCmd.PersistentFlags().String(flBegin, "2015-10-10", "Set beginning date for query")
 	resultsCmd.PersistentFlags().String(flEnd, time.Now().Format(fmtDate), "Set end date for query")
 	resultsCmd.PersistentFlags().StringArrayP(flMachine, "m", []string{}, "Constrain results by machine")
 	resultsCmd.PersistentFlags().IntSliceP(flSet, "s", []int{}, "Constrain results by Set")
