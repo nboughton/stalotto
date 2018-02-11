@@ -138,6 +138,8 @@ func (db *AppDB) Results(begin, end time.Time, machines []string, sets []int) <-
 			}
 		}
 
+		q.Order("date").Append("DESC")
+
 		stmt, err := db.Prepare(q.SQL)
 		if err != nil {
 			log.Println(err)
