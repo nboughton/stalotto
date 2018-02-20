@@ -21,7 +21,7 @@
 package cmd
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/spf13/cobra"
 )
@@ -33,7 +33,7 @@ var updateCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := appDB.Update(); err != nil {
-			log.Println(err)
+			fmt.Println(err)
 		}
 	},
 }

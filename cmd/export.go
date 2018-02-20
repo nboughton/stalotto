@@ -21,7 +21,7 @@
 package cmd
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/nboughton/go-utils/json/file"
 	"github.com/spf13/cobra"
@@ -40,7 +40,7 @@ var exportCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		outputFile, _ := cmd.Flags().GetString(flExportFile)
 		if err := file.Write(outputFile, resultsQuery(cmd)); err != nil {
-			log.Println(err)
+			fmt.Println(err)
 		}
 	},
 }
