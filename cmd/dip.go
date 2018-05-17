@@ -36,18 +36,17 @@ var dipCmd = &cobra.Command{
 of balls was increased to 59) and removes the least drawn half before randomly drawing
 a set.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		begin := time.Date(2015, time.October, 10, 0, 0, 0, 0, time.Local)
-		end := time.Now()
-
-		set := lotto.ResultSet{}
+		set, begin, end := lotto.ResultSet{}, time.Date(2015, time.October, 10, 0, 0, 0, 0, time.Local), time.Now()
 		for res := range appDB.Results(begin, end, []string{}, []int{}) {
 			set = append(set, res)
 		}
 
-		balls, bonus := set.ByDrawFrequency()
-		nSet := balls.Prune().Desc().Balls()
-		numbers := nSet[:len(nSet)/2]
-		bonuses := bonus.Prune().Desc().Balls()[:10]
+		var (
+			balls, bonus = set.ByDrawFrequency()
+			nSet         = balls.Prune().Desc().Balls()
+			numbers      = nSet[:len(nSet)/2]
+			bonuses      = bonus.Prune().Desc().Balls()[:10]
+		)
 
 		fmt.Fprintf(tw, "Balls:\t%v\nBonus:\t%v\n", lotto.Draw(numbers, 6), lotto.Draw(bonuses, 1))
 		tw.Flush()

@@ -33,8 +33,11 @@ var leastCmd = &cobra.Command{
 	Short: "Get the least frequently drawn numbers from the constrained record set",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		balls, bonus := resultsQuery(cmd).ByDrawFrequency()
-		sorted := balls.Prune().Asc().Balls()[:6]
+		var (
+			balls, bonus = resultsQuery(cmd).ByDrawFrequency()
+			sorted       = balls.Prune().Asc().Balls()[:6]
+		)
+
 		sort.Ints(sorted)
 		fmt.Println(sorted, bonus.Prune().Asc().Balls()[0])
 	},
