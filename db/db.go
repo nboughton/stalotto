@@ -60,8 +60,8 @@ func Connect(path string) *AppDB {
 // Update scrapes the archive site and adds newer records until
 // an existing record is found.
 func (db *AppDB) Update() error {
-	q := qGen.NewQuery().
-		Insert("results", allFields)
+	q := qGen.NewQuery().Insert("results", allFields)
+
 	stmt, err := db.Prepare(q.SQL)
 	if err != nil {
 		return err
@@ -247,6 +247,7 @@ func (db *AppDB) LastDraw() (lotto.Result, error) {
 // DataRange retrieves the first and last record dates
 func (db *AppDB) DataRange() (time.Time, time.Time, error) {
 	q := qGen.NewQuery().Select("results", "MIN(date)", "MAX(date)")
+
 	stmt, err := db.Prepare(q.SQL)
 	if err != nil {
 		return time.Now(), time.Now(), err
