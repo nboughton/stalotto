@@ -10,7 +10,7 @@ import (
 	"time"
 
 	_ "github.com/mattn/go-sqlite3" // Import for sqlite db driver
-	qGen "github.com/nboughton/go-sqgenlite"
+	query "github.com/nboughton/go-sqgenlite"
 	"github.com/nboughton/stalotto/lotto"
 )
 
@@ -60,7 +60,7 @@ func Connect(path string) *AppDB {
 // Update scrapes the archive site and adds newer records until
 // an existing record is found.
 func (db *AppDB) Update() error {
-	q := qGen.NewQuery().Insert("results", allFields)
+	q := query.NewQuery().Insert("results", allFields)
 
 	stmt, err := db.Prepare(q.SQL)
 	if err != nil {
@@ -92,7 +92,7 @@ func (db *AppDB) Exists(t time.Time) bool {
 
 // Result retrieves a single record
 func (db *AppDB) Result(t time.Time) (lotto.Result, error) {
-	q := qGen.NewQuery().
+	q := query.NewQuery().
 		Select("results", allFields...).
 		Where("date = ?", t.Format(fmtSqlite))
 
@@ -120,7 +120,7 @@ func (db *AppDB) Results(begin, end time.Time, machines []string, sets []int) <-
 	go func() {
 		defer close(c)
 
-		q := qGen.NewQuery().
+		q := query.NewQuery().
 			Select("results", allFields...).
 			Where("date BETWEEN ? AND ?", begin.Format(fmtSqlite), end.Format(fmtSqlite))
 
@@ -168,13 +168,17 @@ func (db *AppDB) Results(begin, end time.Time, machines []string, sets []int) <-
 
 // Machines returns the distinct machine names constrained by date and sets
 func (db *AppDB) Machines(begin time.Time, end time.Time, sets []int) ([]string, error) {
-	q := qGen.NewQuery().Select("results", "DISTINCT(bmac)")
+	q := query.NewQuery().
+		Select("results", "DISTINCT(bmac)").
+		Where("date BETWEEN ? AND ?", begin.Format(fmtSqlite), end.Format(fmtSqlite))
+
 	if len(sets) > 0 {
 		q.Append(fmt.Sprintf("AND %s", groupOR("bset", len(sets))))
 		for _, s := range sets {
 			q.Args = append(q.Args, s)
 		}
 	}
+	fmt.Println(q.SQL, q.Args)
 	q.Order("bmac")
 
 	stmt, err := db.Prepare(q.SQL)
@@ -187,7 +191,7 @@ func (db *AppDB) Machines(begin time.Time, end time.Time, sets []int) ([]string,
 		return nil, err
 	}
 
-	r := []string{}
+	var r []string
 	for rows.Next() {
 		m := ""
 		rows.Scan(&m)
@@ -199,7 +203,10 @@ func (db *AppDB) Machines(begin time.Time, end time.Time, sets []int) ([]string,
 
 // Sets returns the distinct sets constrained by date and machines
 func (db *AppDB) Sets(begin time.Time, end time.Time, machines []string) ([]int, error) {
-	q := qGen.NewQuery().Select("results", "DISTINCT(bset)")
+	q := query.NewQuery().
+		Select("results", "DISTINCT(bset)").
+		Where("date BETWEEN ? AND ?", begin.Format(fmtSqlite), end.Format(fmtSqlite))
+
 	if len(machines) > 0 {
 		q.Append(fmt.Sprintf("AND %s", groupOR("bmac", len(machines))))
 		for _, m := range machines {
@@ -218,7 +225,7 @@ func (db *AppDB) Sets(begin time.Time, end time.Time, machines []string) ([]int,
 		return nil, err
 	}
 
-	r := []int{}
+	var r []int
 	for rows.Next() {
 		s := 0
 		rows.Scan(&s)
@@ -230,12 +237,12 @@ func (db *AppDB) Sets(begin time.Time, end time.Time, machines []string) ([]int,
 
 // LastDraw retrieves the most recent set of results
 func (db *AppDB) LastDraw() (lotto.Result, error) {
-	q := qGen.NewQuery().
+	q := query.NewQuery().
 		Select("results", allFields...).
 		Order("date").
 		Append("DESC LIMIT 1")
 
-	res := lotto.Result{}
+	var res lotto.Result
 	stmt, err := db.Prepare(q.SQL)
 	if err != nil {
 		return res, err
@@ -246,7 +253,7 @@ func (db *AppDB) LastDraw() (lotto.Result, error) {
 
 // DataRange retrieves the first and last record dates
 func (db *AppDB) DataRange() (time.Time, time.Time, error) {
-	q := qGen.NewQuery().Select("results", "MIN(date)", "MAX(date)")
+	q := query.NewQuery().Select("results", "MIN(date)", "MAX(date)")
 
 	stmt, err := db.Prepare(q.SQL)
 	if err != nil {
@@ -261,4 +268,39 @@ func (db *AppDB) DataRange() (time.Time, time.Time, error) {
 	f, _ := time.Parse(fmtSqlite, first)
 	l, _ := time.Parse(fmtSqlite, last)
 	return f, l, nil
+}
+
+// MacSetFreq provides a struct for recording the frequency of a machine/set combination in draws
+type MacSetFreq struct {
+	Machine string
+	Set     int
+	Freq    int
+}
+
+// MachineSetFreq returns date constrained set displaying which combinations of machine/set have been drawn and how many times
+func (db *AppDB) MachineSetFreq(begin time.Time, end time.Time) ([]MacSetFreq, error) {
+	q := query.NewQuery().
+		Select("results", "bmac", "bset", "COUNT(bmac) as bcount").
+		Where("date BETWEEN ? AND ?", begin.Format(fmtSqlite), end.Format(fmtSqlite)).
+		Group("bmac, bset").
+		Order("bcount")
+
+	stmt, err := db.Prepare(q.SQL)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := stmt.Query(q.Args...)
+	if err != nil {
+		return nil, err
+	}
+
+	var res []MacSetFreq
+	for rows.Next() {
+		var r MacSetFreq
+		rows.Scan(&r.Machine, &r.Set, &r.Freq)
+		res = append(res, r)
+	}
+
+	return res, nil
 }

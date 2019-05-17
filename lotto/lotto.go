@@ -91,7 +91,7 @@ func (f FrequencySet) Less(i, j int) bool { return f[i].Frequency < f[j].Frequen
 
 // Prune off balls that have never been drawn
 func (f FrequencySet) Prune() FrequencySet {
-	out := FrequencySet{}
+	var out FrequencySet
 	for _, b := range f {
 		if b.Frequency > 0 {
 			out = append(out, b)
@@ -102,7 +102,7 @@ func (f FrequencySet) Prune() FrequencySet {
 
 // Balls returns numbers in whatever order the set is currently in
 func (f FrequencySet) Balls() []int {
-	b := []int{}
+	var b []int
 	for _, n := range f {
 		b = append(b, n.Ball)
 	}
@@ -128,7 +128,7 @@ func Draw(set []int, n int) []int {
 	// ResultSet a rand seed
 	rand.Seed(time.Now().UnixNano())
 
-	out := []int{}
+	var out []int
 	for i := 0; i < n; i++ {
 		// Select index for this draw
 		idx := rand.Intn(len(set))
