@@ -27,8 +27,8 @@ import (
 )
 
 // setFrequencyCmd represents the setFrequency command
-var setFrequencyCmd = &cobra.Command{
-	Use:   "setFrequency",
+var drawsCmd = &cobra.Command{
+	Use:   "draws",
 	Short: "Show frequency of machine/set combinations in a date constrained data set",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -49,5 +49,5 @@ var setFrequencyCmd = &cobra.Command{
 }
 
 func init() {
-	resultsCmd.AddCommand(setFrequencyCmd)
+	resultsCmd.AddCommand(drawsCmd)
 }
