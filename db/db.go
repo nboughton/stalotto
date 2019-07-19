@@ -62,7 +62,7 @@ func Connect(path string) *AppDB {
 func (db *AppDB) Update() error {
 	q := query.NewQuery().Insert("results", allFields)
 
-	stmt, err := db.Prepare(q.SQL)
+	stmt, err := db.Prepare(q.SQL.String())
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func (db *AppDB) Result(t time.Time) (lotto.Result, error) {
 		Select("results", allFields...).
 		Where("date = ?", t.Format(fmtSqlite))
 
-	stmt, err := db.Prepare(q.SQL)
+	stmt, err := db.Prepare(q.SQL.String())
 	if err != nil {
 		return lotto.Result{}, err
 	}
@@ -140,7 +140,7 @@ func (db *AppDB) Results(begin, end time.Time, machines []string, sets []int) <-
 
 		q.Order("date").Append("DESC")
 
-		stmt, err := db.Prepare(q.SQL)
+		stmt, err := db.Prepare(q.SQL.String())
 		if err != nil {
 			log.Println(err)
 			return
@@ -181,7 +181,7 @@ func (db *AppDB) Machines(begin time.Time, end time.Time, sets []int) ([]string,
 	fmt.Println(q.SQL, q.Args)
 	q.Order("bmac")
 
-	stmt, err := db.Prepare(q.SQL)
+	stmt, err := db.Prepare(q.SQL.String())
 	if err != nil {
 		return nil, err
 	}
@@ -215,7 +215,7 @@ func (db *AppDB) Sets(begin time.Time, end time.Time, machines []string) ([]int,
 	}
 	q.Order("bset")
 
-	stmt, err := db.Prepare(q.SQL)
+	stmt, err := db.Prepare(q.SQL.String())
 	if err != nil {
 		return nil, err
 	}
@@ -243,7 +243,7 @@ func (db *AppDB) LastDraw() (lotto.Result, error) {
 		Append("DESC LIMIT 1")
 
 	var res lotto.Result
-	stmt, err := db.Prepare(q.SQL)
+	stmt, err := db.Prepare(q.SQL.String())
 	if err != nil {
 		return res, err
 	}
@@ -255,7 +255,7 @@ func (db *AppDB) LastDraw() (lotto.Result, error) {
 func (db *AppDB) DataRange() (time.Time, time.Time, error) {
 	q := query.NewQuery().Select("results", "MIN(date)", "MAX(date)")
 
-	stmt, err := db.Prepare(q.SQL)
+	stmt, err := db.Prepare(q.SQL.String())
 	if err != nil {
 		return time.Now(), time.Now(), err
 	}
@@ -285,7 +285,7 @@ func (db *AppDB) MachineSetFreq(begin time.Time, end time.Time) ([]MacSetFreq, e
 		Group("bmac, bset").
 		Order("bcount")
 
-	stmt, err := db.Prepare(q.SQL)
+	stmt, err := db.Prepare(q.SQL.String())
 	if err != nil {
 		return nil, err
 	}
