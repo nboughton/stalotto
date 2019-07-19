@@ -178,7 +178,6 @@ func (db *AppDB) Machines(begin time.Time, end time.Time, sets []int) ([]string,
 			q.Args = append(q.Args, s)
 		}
 	}
-	fmt.Println(q.SQL, q.Args)
 	q.Order("bmac")
 
 	stmt, err := db.Prepare(q.SQL.String())
