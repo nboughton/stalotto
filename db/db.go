@@ -138,8 +138,10 @@ func (db *AppDB) Results(begin, end time.Time, machines []string, sets []int, or
 			}
 		}
 
+		q.Order("date")
+
 		if orderDesc {
-			q.Order("date").Append("DESC")
+			q.Append("DESC")
 		}
 
 		stmt, err := db.Prepare(q.SQL.String())
