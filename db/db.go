@@ -114,7 +114,7 @@ func groupOR(field string, vals int) string {
 }
 
 // Results returns a channel of records
-func (db *AppDB) Results(begin, end time.Time, machines []string, sets []int) <-chan lotto.Result {
+func (db *AppDB) Results(begin, end time.Time, machines []string, sets []int, orderDesc bool) <-chan lotto.Result {
 	c := make(chan lotto.Result)
 
 	go func() {
@@ -138,7 +138,9 @@ func (db *AppDB) Results(begin, end time.Time, machines []string, sets []int) <-
 			}
 		}
 
-		q.Order("date").Append("DESC")
+		if orderDesc {
+			q.Order("date").Append("DESC")
+		}
 
 		stmt, err := db.Prepare(q.SQL.String())
 		if err != nil {

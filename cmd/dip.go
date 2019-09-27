@@ -37,7 +37,7 @@ of balls was increased to 59) and removes the least drawn half before randomly d
 a set.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		set, begin, end := lotto.ResultSet{}, time.Date(2015, time.October, 10, 0, 0, 0, 0, time.Local), time.Now()
-		for res := range appDB.Results(begin, end, []string{}, []int{}) {
+		for res := range appDB.Results(begin, end, []string{}, []int{}, false) {
 			set = append(set, res)
 		}
 

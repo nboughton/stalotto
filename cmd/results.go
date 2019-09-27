@@ -61,7 +61,7 @@ func resultsQuery(cmd *cobra.Command) lotto.ResultSet {
 	return set
 }
 
-func parseQueryFlags(cmd *cobra.Command) (time.Time, time.Time, []string, []int) {
+func parseQueryFlags(cmd *cobra.Command) (time.Time, time.Time, []string, []int, bool) {
 	bStr, _ := cmd.Flags().GetString(flBegin)
 	begin, err := time.Parse(fmtDate, bStr)
 	chkDateErr(err)
@@ -73,7 +73,7 @@ func parseQueryFlags(cmd *cobra.Command) (time.Time, time.Time, []string, []int)
 	machines, _ := cmd.Flags().GetStringArray(flMachine)
 	sets, _ := cmd.Flags().GetIntSlice(flSet)
 
-	return begin, end, machines, sets
+	return begin, end, machines, sets, true
 }
 
 func chkDateErr(e error) {

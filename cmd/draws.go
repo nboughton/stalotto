@@ -32,7 +32,7 @@ var drawsCmd = &cobra.Command{
 	Short: "Show frequency of machine/set combinations in a date constrained data set",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		start, end, _, _ := parseQueryFlags(cmd)
+		start, end, _, _, _ := parseQueryFlags(cmd)
 
 		freqSets, err := appDB.MachineSetFreq(start, end)
 		if err != nil {
