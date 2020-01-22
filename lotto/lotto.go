@@ -129,7 +129,7 @@ func Draw(set []int, n int) []int {
 	rand.Seed(time.Now().UnixNano())
 
 	var out []int
-	for i := 0; i < n; i++ {
+	for i := 0; i < n && len(set) > 0; i++ {
 		// Select index for this draw
 		idx := rand.Intn(len(set))
 		// Append pick to the output
